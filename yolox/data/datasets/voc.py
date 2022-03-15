@@ -60,11 +60,12 @@ class AnnotationTransform(object):
                 continue
             name = obj.find("name").text.strip()
             bbox = obj.find("bndbox")
-
             pts = ["xmin", "ymin", "xmax", "ymax"]
             bndbox = []
             for i, pt in enumerate(pts):
-                cur_pt = int(float(bbox.find(pt).text)) - 1
+                #print("#########################################################################################bbox.find(pt).text:")
+                #print(bbox.find(pt).text)
+                cur_pt = int(bbox.find(pt).text) - 1
                 # scale height or width
                 # cur_pt = cur_pt / width if i % 2 == 0 else cur_pt / height
                 bndbox.append(cur_pt)
@@ -72,9 +73,13 @@ class AnnotationTransform(object):
             bndbox.append(label_idx)
             res = np.vstack((res, bndbox))  # [xmin, ymin, xmax, ymax, label_ind]
             # img_id = target.find('filename').text[:-4]
-
+        #print("#########################################################################################w and h")
+        #print(target.find("size").find("width").text)
+        #print(target.find("size").find("height").text)
         width = int(target.find("size").find("width").text)
         height = int(target.find("size").find("height").text)
+        #width = 1024
+        #height = 1024
         img_info = (height, width)
 
         return res, img_info
@@ -112,6 +117,7 @@ class VOCDetection(Dataset):
     ):
         super().__init__(img_size)
         self.root = data_dir
+        #print(data_dir)
         self.image_set = image_sets
         self.img_size = img_size
         self.preproc = preproc
@@ -152,7 +158,7 @@ class VOCDetection(Dataset):
         )
         max_h = self.img_size[0]
         max_w = self.img_size[1]
-        cache_file = os.path.join(self.root, f"img_resized_cache_{self.name}.array")
+        cache_file = self.root + "/img_resized_cache_" + self.name + ".array"
         if not os.path.exists(cache_file):
             logger.info(
                 "Caching images for the first time. This might take about 3 minutes for VOC"
@@ -282,7 +288,7 @@ class VOCDetection(Dataset):
 
     def _get_voc_results_file_template(self):
         filename = "comp4_det_test" + "_{:s}.txt"
-        filedir = os.path.join(self.root, "results", "VOC2007" , "Main")
+        filedir = os.path.join(self.root, "results")
         if not os.path.exists(filedir):
             os.makedirs(filedir)
         path = os.path.join(filedir, filename)
@@ -316,11 +322,11 @@ class VOCDetection(Dataset):
     def _do_python_eval(self, output_dir="output", iou=0.5):
         #rootpath = os.path.join(self.root, "VOC" + self._year)
         rootpath = self.root
-        name = self.image_set[0][1]
-        annopath = os.path.join(rootpath, "Annotations", "{:s}.xml")
+        name = self.image_set[0]
+        annopath = os.path.join(rootpath, "Annotations", "{}.xml")
         imagesetfile = os.path.join(rootpath, "ImageSets", "Main", name + ".txt")
         cachedir = os.path.join(
-            self.root, "annotations_cache", "VOC2007" + name
+            self.root, "annotations_cache"
         )
         if not os.path.exists(cachedir):
             os.makedirs(cachedir)
