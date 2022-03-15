@@ -28,7 +28,7 @@ class Exp(MyExp):
         # prob of applying flip aug
         #self.flip_prob = 0.5
         # rotation angle range, for example, if set to 2, the true range is (-2, 2)
-        self.degrees = 10.0
+        #self.degrees = 10.0
         # translate range, for example, if set to 0.1, the true range is (-0.1, 0.1)
         self.translate = 0.1
         self.mosaic_scale = (0.1, 2)
@@ -36,13 +36,13 @@ class Exp(MyExp):
         self.enable_mixup = False
         self.mixup_scale = (0.5, 1.5)
         # shear angle range, for example, if set to 2, the true range is (-2, 2)
-        self.shear = 2.0
+        #self.shear = 2.0
 
         # ---------------- dataloader config ---------------- #
         # set worker to 4 for shorter dataloader init time
         # If your training process cost many memory, reduce this value.
         self.data_num_workers = 4
-        self.input_size = (1024, 1024)  # (height, width)
+        #self.input_size = (1024, 1024)  # (height, width)
         # Actual multiscale ranges: [640 - 5 * 32, 640 + 5 * 32].
         # To disable multiscale training, set the value to 0.
         self.multiscale_range = 0
@@ -59,9 +59,9 @@ class Exp(MyExp):
 
         # --------------  training config --------------------- #
         # epoch number used for warmup
-        self.warmup_epochs = 10
+        self.warmup_epochs = 2
         # max training epoch
-        self.max_epoch = 300
+        self.max_epoch = 10
         # minimum learning rate during warmup
         self.warmup_lr = 0
         self.min_lr_ratio = 0.05
@@ -70,7 +70,7 @@ class Exp(MyExp):
         # name of LRScheduler
         self.scheduler = "yoloxwarmcos"
         # last #epoch to close augmention like mosaic
-        self.no_aug_epochs = 15
+        self.no_aug_epochs = 11
         # apply EMA during training
         self.ema = True
 
@@ -80,10 +80,10 @@ class Exp(MyExp):
         self.momentum = 0.9
         # log period in iter, for example,
         # if set to 1, user could see log every iteration.
-        self.print_interval = 10
+        self.print_interval = 1
         # eval period in epoch, for example,
         # if set to 1, model will be evaluate after every epoch.
-        self.eval_interval = 10
+        self.eval_interval = 1
         # save history checkpoint or not.
         # If set to False, yolox will only save latest and best ckpt.
         self.save_history_ckpt = False
@@ -92,7 +92,7 @@ class Exp(MyExp):
 
         # -----------------  testing config ------------------ #
         # output image size during evaluation/test
-        self.test_size = (1024, 1024)
+        #self.test_size = (1024, 1024)
         # confidence threshold during evaluation/test,
         # boxes whose scores are less than test_conf will be filtered
         self.test_conf = 0.45
