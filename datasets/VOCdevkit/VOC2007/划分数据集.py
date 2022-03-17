@@ -1,10 +1,10 @@
 import os
 import random
 
-trainval_percent = 0.9
-train_percent = 0.9
-xmlfilepath = r'C:\Users\16325\Desktop\YOLOX-main\datasets\VOCdevkit\VOC2007\Annotations'
-home = r"C:\Users\16325\Desktop\YOLOX-main\datasets\VOCdevkit\VOC2007\ImageSets\Main\\"
+trainval_percent = 0.8
+train_percent = 0.8
+xmlfilepath = r'C:\Users\16325\Desktop\毕设\YOLOX\datasets\VOCdevkit\VOC2007\Annotations'
+home = r"C:\Users\16325\Desktop\毕设\YOLOX\datasets\VOCdevkit\VOC2007\ImageSets\Main\\"
 #txtsavepath = '/home/ubuntu/tf-faster-rcnn-master/data/VOCdevkit2007/VOC2007/ImageSets/Main'
 total_xml = os.listdir(xmlfilepath)
 

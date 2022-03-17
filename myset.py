@@ -61,16 +61,16 @@ class Exp(MyExp):
         # epoch number used for warmup
         self.warmup_epochs = 2
         # max training epoch
-        self.max_epoch = 10
+        self.max_epoch = 20
         # minimum learning rate during warmup
         self.warmup_lr = 0
         self.min_lr_ratio = 0.05
         # learning rate for one image. During training, lr will multiply batchsize.
-        #self.basic_lr_per_img = 0.01 / 64.0
+        #self.basic_lr_per_img = 0.01 / 20.0
         # name of LRScheduler
         self.scheduler = "yoloxwarmcos"
         # last #epoch to close augmention like mosaic
-        self.no_aug_epochs = 11
+        self.no_aug_epochs = 21
         # apply EMA during training
         self.ema = True
 
