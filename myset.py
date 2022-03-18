@@ -21,20 +21,26 @@ class Exp(MyExp):
         # --------------- transform config ----------------- #
         # prob of applying mosaic aug
         #self.mosaic_prob = 1.0
+
         # prob of applying mixup aug
         #self.mixup_prob = 1.0
+
         # prob of applying hsv aug
         #self.hsv_prob = 1.0
+
         # prob of applying flip aug
         #self.flip_prob = 0.5
+
         # rotation angle range, for example, if set to 2, the true range is (-2, 2)
         #self.degrees = 10.0
+
         # translate range, for example, if set to 0.1, the true range is (-0.1, 0.1)
         self.translate = 0.1
         self.mosaic_scale = (0.1, 2)
         # apply mixup aug or not
         self.enable_mixup = False
         self.mixup_scale = (0.5, 1.5)
+        
         # shear angle range, for example, if set to 2, the true range is (-2, 2)
         #self.shear = 2.0
 
@@ -61,16 +67,16 @@ class Exp(MyExp):
         # epoch number used for warmup
         self.warmup_epochs = 2
         # max training epoch
-        self.max_epoch = 20
+        self.max_epoch = 50
         # minimum learning rate during warmup
         self.warmup_lr = 0
         self.min_lr_ratio = 0.05
         # learning rate for one image. During training, lr will multiply batchsize.
-        #self.basic_lr_per_img = 0.01 / 20.0
+        self.basic_lr_per_img = 0.01 / 20.0
         # name of LRScheduler
         self.scheduler = "yoloxwarmcos"
         # last #epoch to close augmention like mosaic
-        self.no_aug_epochs = 21
+        self.no_aug_epochs = 51
         # apply EMA during training
         self.ema = True
 
@@ -95,7 +101,7 @@ class Exp(MyExp):
         #self.test_size = (1024, 1024)
         # confidence threshold during evaluation/test,
         # boxes whose scores are less than test_conf will be filtered
-        self.test_conf = 0.45
+        self.test_conf = 0.01
         # nms threshold
         self.nmsthre = 0.65
 

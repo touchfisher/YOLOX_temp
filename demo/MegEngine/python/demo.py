@@ -134,6 +134,7 @@ class Predictor(object):
         return outputs, img_info
 
     def visual(self, output, img_info, cls_conf=0.35):
+        print(img_info)
         ratio = img_info["ratio"]
         img = img_info["raw_img"]
         if output is None:

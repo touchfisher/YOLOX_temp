@@ -38,6 +38,16 @@ def vis(img, boxes, scores, cls_ids, conf=0.5, class_names=None):
             -1
         )
         cv2.putText(img, text, (x0, y0 + txt_size[1]), font, 0.4, txt_color, thickness=1)
+        confidence = float(score)
+        confidence = format(confidence, '.5f')
+        x_zuoshang_x = x0
+        x_zuoshang_y = y0
+        width = x1-x0
+        height = y1-y0
+
+        #print(img)
+        #print(box)
+        #print(float(score),x0,y0,x1-x0,y1-y0)
 
     return img
 

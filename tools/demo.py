@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 # Copyright (c) Megvii, Inc. and its affiliates.
-
+import pandas as pd
 import argparse
 import os
 import time
@@ -180,6 +180,54 @@ class Predictor(object):
         cls = output[:, 6]
         scores = output[:, 4] * output[:, 5]
 
+        img_name = img_info["file_name"][:-4]
+
+        for i in range(len(bboxes)):
+            box = bboxes[i]
+            #cls_id = int(cls[i])
+            score = scores[i]
+            if score < cls_conf:
+                continue
+            x0 = int(box[0])
+            y0 = int(box[1])
+            x1 = int(box[2])
+            y1 = int(box[3])
+
+            confidence = float(score)
+            confidence = format(confidence, '.5f')
+
+            if x0 < 0:
+                x0 = 0
+            if x0 > 1023:
+                x0 = 1023
+            if x1 < 0:
+                x1 = 0
+            if x1 > 1023:
+                x1 = 1023
+
+            if y0 < 0:
+                y0 = 0
+            if y0 > 1023:
+                y0 = 1023
+            if y1 < 0:
+                y1 = 0
+            if y1 > 1023:
+                y1 = 1023
+
+            width = x1-x0
+            height = y1-y0
+
+            filename = "submit.txt"
+            #filedir = self.root+filename
+            '''
+            if not os.path.exists(filedir):
+                os.makedirs(filedir)
+            '''
+            path = os.path.join(filename, filename)
+
+            with open(filename,"a") as f:
+                f.write(str(img_name)+" "+str(confidence)+" "+str(x0)+" "+str(y0)+" "+str(width)+" "+str(height)+"\n")
+        
         vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
         return vis_res
 
@@ -318,3 +366,53 @@ if __name__ == "__main__":
     exp = get_exp(args.exp_file, args.name)
 
     main(exp, args)
+
+    res = []
+
+    with open("submit.txt","r") as f:
+        lines = f.readlines()
+        for line in lines:
+            if line != None:
+                # 从文件中读取行数据时，会带换行符，使用strip函数去掉 换行符后存入列表
+                res.append(line.strip("\n"))
+
+    #print(res)
+
+    img_names = {}
+
+    for i in res:
+        line = i.split(" ")
+        name = line[0]
+        if name not in img_names:
+            img_names[name] = line[1:]
+        else:
+            img_names[name] = img_names[name]+line[1:]
+
+    all_res = []
+    for k,v in img_names.items():
+        thisl = []
+        thisl.append(str(k))
+
+        v_str = ""
+        for j in range(len(v)):
+            if j != len(v)-1:
+                v_str+=v[j]+" "
+            else:
+                v_str+=v[j]
+        thisl.append(v_str)
+        all_res.append(thisl)
+
+    #print(all_res)
+
+    '''
+    list_a = [
+        ["a","2 3 4 5"],
+        ["b","3 4 5 6"],
+    ]
+    '''
+
+    test = pd.DataFrame(all_res,columns=['image_id','PredictionString'])
+    test.to_csv('submission.csv',index=False)
+
+    print(test.head())
+
