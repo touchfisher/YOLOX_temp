@@ -383,7 +383,9 @@ class YOLOXHead(nn.Module):
         if self.use_l1:
             l1_targets = torch.cat(l1_targets, 0)
 
+
         num_fg = max(num_fg, 1)
+        """
         loss_iou = (
             self.iou_loss(bbox_preds.view(-1, 4)[fg_masks], reg_targets)
         ).sum() / num_fg
@@ -395,6 +397,24 @@ class YOLOXHead(nn.Module):
                 cls_preds.view(-1, self.num_classes)[fg_masks], cls_targets
             )
         ).sum() / num_fg
+        """
+
+        # loss_iou:定位损失；loss_obj：置信度预测损失；loss_cls：预测损失
+        loss_iou = (
+            self.iou_loss(bbox_preds.view(-1, 4)[fg_masks], reg_targets)
+        ).sum() / num_fg
+        #loss_obj = (  
+        #    self.bcewithlog_loss(obj_preds.view(-1, 1), obj_targets)
+        #).sum() / num_fg
+        loss_obj = (
+            self.focal_loss(obj_preds.sigmoid().view(-1, 1), obj_targets)
+        ).sum() / num_fg
+        loss_cls = (
+            self.bcewithlog_loss(
+                cls_preds.view(-1, self.num_classes)[fg_masks], cls_targets
+            )
+        ).sum() / num_fg
+
         if self.use_l1:
             loss_l1 = (
                 self.l1_loss(origin_preds.view(-1, 4)[fg_masks], l1_targets)
@@ -413,6 +433,15 @@ class YOLOXHead(nn.Module):
             loss_l1,
             num_fg / max(num_gts, 1),
         )
+
+    #增加了focal_loss
+    def focal_loss(self, pred, gt):
+            pos_inds = gt.eq(1).float()
+            neg_inds = gt.eq(0).float()
+            pos_loss = torch.log(pred+1e-5) * torch.pow(1 - pred, 2) * pos_inds * 0.75
+            neg_loss = torch.log(1 - pred+1e-5) * torch.pow(pred, 2) * neg_inds * 0.25
+            loss = -(pos_loss + neg_loss)
+            return loss
 
     def get_l1_target(self, l1_target, gt, stride, x_shifts, y_shifts, eps=1e-8):
         l1_target[:, 0] = gt[:, 0] / stride - x_shifts

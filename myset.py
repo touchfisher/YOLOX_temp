@@ -38,7 +38,7 @@ class Exp(MyExp):
         self.translate = 0.1
         self.mosaic_scale = (0.1, 2)
         # apply mixup aug or not
-        self.enable_mixup = False
+        self.enable_mixup = True
         self.mixup_scale = (0.5, 1.5)
         
         # shear angle range, for example, if set to 2, the true range is (-2, 2)
@@ -67,7 +67,7 @@ class Exp(MyExp):
         # epoch number used for warmup
         self.warmup_epochs = 2
         # max training epoch
-        self.max_epoch = 50
+        self.max_epoch = 90
         # minimum learning rate during warmup
         self.warmup_lr = 0
         self.min_lr_ratio = 0.05
@@ -76,7 +76,7 @@ class Exp(MyExp):
         # name of LRScheduler
         self.scheduler = "yoloxwarmcos"
         # last #epoch to close augmention like mosaic
-        self.no_aug_epochs = 51
+        self.no_aug_epochs = 91
         # apply EMA during training
         self.ema = True
 
