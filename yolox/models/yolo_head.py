@@ -27,6 +27,8 @@ class YOLOXHead(nn.Module):
         act="silu",
         depthwise=False,
     ):
+        self.varifocal = VarifocalLoss(reduction='none')
+
         """
         Args:
             act (str): activation type of conv. Defalut value: "silu".
