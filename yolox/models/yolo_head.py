@@ -27,14 +27,13 @@ class YOLOXHead(nn.Module):
         act="silu",
         depthwise=False,
     ):
-        self.varifocal = VarifocalLoss(reduction='none')
-
         """
         Args:
             act (str): activation type of conv. Defalut value: "silu".
             depthwise (bool): whether apply depthwise conv in conv branch. Defalut value: False.
         """
         super().__init__()
+        self.varifocal = VarifocalLoss(reduction='none')
 
         self.n_anchors = 1
         self.num_classes = num_classes
