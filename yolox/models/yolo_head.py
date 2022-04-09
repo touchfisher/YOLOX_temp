@@ -13,8 +13,6 @@ from yolox.utils import bboxes_iou
 
 from .losses import IOUloss
 from .network_blocks import BaseConv, DWConv
-from .varifocalloss import VarifocalLoss
-
 
 
 class YOLOXHead(nn.Module):
@@ -33,7 +31,6 @@ class YOLOXHead(nn.Module):
             depthwise (bool): whether apply depthwise conv in conv branch. Defalut value: False.
         """
         super().__init__()
-        self.varifocal = VarifocalLoss(reduction='none')
 
         self.n_anchors = 1
         self.num_classes = num_classes
@@ -401,7 +398,7 @@ class YOLOXHead(nn.Module):
             )
         ).sum() / num_fg
         """
-        """
+
         # loss_iou:定位损失；loss_obj：置信度预测损失；loss_cls：预测损失
         loss_iou = (
             self.iou_loss(bbox_preds.view(-1, 4)[fg_masks], reg_targets)
@@ -417,21 +414,6 @@ class YOLOXHead(nn.Module):
                 cls_preds.view(-1, self.num_classes)[fg_masks], cls_targets
             )
         ).sum() / num_fg
-        """
-        # loss_iou:定位损失；loss_obj：置信度预测损失；loss_cls：预测损失
-        loss_iou = (
-            self.iou_loss(bbox_preds.view(-1, 4)[fg_masks], reg_targets)
-        ).sum() / num_fg
-        #loss_obj = (  
-        #    self.bcewithlog_loss(obj_preds.view(-1, 1), obj_targets)
-        #).sum() / num_fg
-        loss_obj = (self.varifocal(obj_preds.view(-1, 1), obj_targets)
-        ).sum() / num_fg
-        loss_cls = (
-            self.bcewithlog_loss(
-                cls_preds.view(-1, self.num_classes)[fg_masks], cls_targets)
-        ).sum() / num_fg
-
 
         if self.use_l1:
             loss_l1 = (
