@@ -7,7 +7,7 @@ import torch.nn as nn
 
 from .darknet import CSPDarknet
 from .network_blocks import BaseConv, CSPLayer, DWConv
-
+from .attention import CBAM, SE # 1、导入注意力机制模块
 
 class YOLOPAFPN(nn.Module):
     """
@@ -79,6 +79,12 @@ class YOLOPAFPN(nn.Module):
             depthwise=depthwise,
             act=act,
         )
+        ##################
+        ### 2、在dark3、dark4、dark5分支后加入CBAM 模块（该分支是主干网络传入FPN的过程中）
+        ### in_channels = [256, 512, 1024],forward从dark5开始进行，所以cbam_1为dark5
+        self.cbam_1 = SE(int(in_channels[2] * width)) # 对应dark5输出的1024维度通道
+        self.cbam_2 = SE(int(in_channels[1] * width))   # 对应dark4输出的512维度通道
+        self.cbam_3 = SE(int(in_channels[0] * width))   # 对应dark3输出的256维度通道
 
     def forward(self, input):
         """
@@ -93,6 +99,10 @@ class YOLOPAFPN(nn.Module):
         out_features = self.backbone(input)
         features = [out_features[f] for f in self.in_features]
         [x2, x1, x0] = features
+
+        x0 = self.cbam_1(x0)
+        x1 = self.cbam_2(x1)
+        x2 = self.cbam_3(x2)
 
         fpn_out0 = self.lateral_conv0(x0)  # 1024->512/32
         f_out0 = self.upsample(fpn_out0)  # 512/16
