@@ -282,6 +282,7 @@ class VOCDetection(Dataset):
 
         print("--------------------------------------------------------------")
         print("map_5095:", np.mean(mAPs))
+        print("map_5075:", np.mean(mAPs[0:6]))
         print("map_50:", mAPs[0])
         print("--------------------------------------------------------------")
         return np.mean(mAPs), mAPs[0]

@@ -12,7 +12,7 @@ import cv2
 import torch
 
 from yolox.data.data_augment import ValTransform
-from yolox.data.datasets import COCO_CLASSES,VOC_CLASSES
+from yolox.data.datasets import COCO_CLASSES
 from yolox.exp import get_exp
 from yolox.utils import fuse_model, get_model_info, postprocess, vis
 
@@ -102,7 +102,7 @@ class Predictor(object):
         self,
         model,
         exp,
-        cls_names=VOC_CLASSES,
+        cls_names=COCO_CLASSES,
         trt_file=None,
         decoder=None,
         device="cpu",
@@ -216,17 +216,6 @@ class Predictor(object):
 
             width = x1-x0
             height = y1-y0
-
-            filename = "submit.txt"
-            #filedir = self.root+filename
-            '''
-            if not os.path.exists(filedir):
-                os.makedirs(filedir)
-            '''
-            path = os.path.join(filename, filename)
-
-            with open(filename,"a") as f:
-                f.write(str(img_name)+" "+str(confidence)+" "+str(x0)+" "+str(y0)+" "+str(width)+" "+str(height)+"\n")
         
         vis_res = vis(img, bboxes, scores, cls, cls_conf, self.cls_names)
         return vis_res
@@ -351,7 +340,7 @@ def main(exp, args):
         decoder = None
 
     predictor = Predictor(
-        model, exp, VOC_CLASSES, trt_file, decoder,
+        model, exp, COCO_CLASSES, trt_file, decoder,
         args.device, args.fp16, args.legacy,
     )
     current_time = time.localtime()
@@ -366,53 +355,4 @@ if __name__ == "__main__":
     exp = get_exp(args.exp_file, args.name)
 
     main(exp, args)
-
-    res = []
-
-    with open("submit.txt","r") as f:
-        lines = f.readlines()
-        for line in lines:
-            if line != None:
-                # 从文件中读取行数据时，会带换行符，使用strip函数去掉 换行符后存入列表
-                res.append(line.strip("\n"))
-
-    #print(res)
-
-    img_names = {}
-
-    for i in res:
-        line = i.split(" ")
-        name = line[0]
-        if name not in img_names:
-            img_names[name] = line[1:]
-        else:
-            img_names[name] = img_names[name]+line[1:]
-
-    all_res = []
-    for k,v in img_names.items():
-        thisl = []
-        thisl.append(str(k))
-
-        v_str = ""
-        for j in range(len(v)):
-            if j != len(v)-1:
-                v_str+=v[j]+" "
-            else:
-                v_str+=v[j]
-        thisl.append(v_str)
-        all_res.append(thisl)
-
-    #print(all_res)
-
-    '''
-    list_a = [
-        ["a","2 3 4 5"],
-        ["b","3 4 5 6"],
-    ]
-    '''
-
-    test = pd.DataFrame(all_res,columns=['image_id','PredictionString'])
-    test.to_csv('submission.csv',index=False)
-
-    print(test.head())
 
